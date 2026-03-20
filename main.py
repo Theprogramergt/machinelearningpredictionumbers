@@ -396,13 +396,3 @@ with c3:
         The model was never trained on this style, so it struggles.
     </div>
     """, unsafe_allow_html=True)
-
-st.markdown("")
-st.markdown("""
-<div class="warning-card">
-    <b>📌 Key lesson:</b> A model is only as good as its training data.
-    If you train on MNIST-style images, it works perfectly on MNIST-style images.
-    To make it work on real phone photos, you'd need thousands of real phone photos too.
-    This is called <b>domain mismatch</b> — one of the most common problems in real-world AI.
-</div>
-""", unsafe_allow_html=True)
