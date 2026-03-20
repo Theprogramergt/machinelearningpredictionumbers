@@ -8,110 +8,28 @@ import numpy as np
 from PIL import Image
 import os
 
-# =========================
-# Page config
-# =========================
-st.set_page_config(
-    page_title="Digit Predictor",
-    page_icon="🔢",
-    layout="wide"
-)
+st.set_page_config(page_title="Digit Predictor", page_icon="🔢", layout="wide")
 
-# =========================
-# Custom CSS
-# =========================
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap');
-
-    html, body, [class*="css"] {
-        font-family: 'Syne', sans-serif;
-        background-color: #0a0a0f;
-        color: #f0f0f0;
-    }
+    html, body, [class*="css"] { font-family: 'Syne', sans-serif; background-color: #0a0a0f; color: #f0f0f0; }
     .stApp { background: #0a0a0f; }
     h1, h2, h3 { font-family: 'Syne', sans-serif !important; font-weight: 800 !important; }
-
-    .big-title {
-        font-family: 'Syne', sans-serif;
-        font-size: 3rem;
-        font-weight: 800;
-        background: linear-gradient(90deg, #00f5a0, #00d9f5);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 0;
-    }
-    .subtitle {
-        font-family: 'Space Mono', monospace;
-        font-size: 0.85rem;
-        color: #666;
-        margin-top: 0;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-    }
-    .prediction-box {
-        background: linear-gradient(135deg, #1a1a2e, #16213e);
-        border: 1px solid #00f5a0;
-        border-radius: 16px;
-        padding: 2rem;
-        text-align: center;
-        margin: 1rem 0;
-    }
-    .prediction-number {
-        font-family: 'Space Mono', monospace;
-        font-size: 5rem;
-        font-weight: 700;
-        color: #00f5a0;
-        line-height: 1;
-    }
-    .confidence-bar-container {
-        background: #1a1a2e;
-        border-radius: 8px;
-        height: 12px;
-        margin: 4px 0;
-        overflow: hidden;
-    }
-    .info-card {
-        background: #111120;
-        border: 1px solid #222240;
-        border-radius: 12px;
-        padding: 1.2rem;
-        margin: 0.5rem 0;
-    }
-    .warning-card {
-        background: #1a0a00;
-        border: 1px solid #ff6b35;
-        border-radius: 12px;
-        padding: 1.2rem;
-        margin: 0.5rem 0;
-        color: #ff9966;
-    }
-    .stButton > button {
-        background: linear-gradient(135deg, #00f5a0, #00d9f5) !important;
-        color: #0a0a0f !important;
-        font-family: 'Syne', sans-serif !important;
-        font-weight: 700 !important;
-        border: none !important;
-        border-radius: 8px !important;
-        padding: 0.5rem 1.5rem !important;
-        font-size: 1rem !important;
-    }
+    .big-title { font-family: 'Syne', sans-serif; font-size: 3rem; font-weight: 800; background: linear-gradient(90deg, #00f5a0, #00d9f5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0; }
+    .subtitle { font-family: 'Space Mono', monospace; font-size: 0.85rem; color: #666; margin-top: 0; letter-spacing: 2px; text-transform: uppercase; }
+    .prediction-box { background: linear-gradient(135deg, #1a1a2e, #16213e); border: 1px solid #00f5a0; border-radius: 16px; padding: 2rem; text-align: center; margin: 1rem 0; }
+    .prediction-number { font-family: 'Space Mono', monospace; font-size: 5rem; font-weight: 700; color: #00f5a0; line-height: 1; }
+    .confidence-bar-container { background: #1a1a2e; border-radius: 8px; height: 12px; margin: 4px 0; overflow: hidden; }
+    .info-card { background: #111120; border: 1px solid #222240; border-radius: 12px; padding: 1.2rem; margin: 0.5rem 0; }
+    .warning-card { background: #1a0a00; border: 1px solid #ff6b35; border-radius: 12px; padding: 1.2rem; margin: 0.5rem 0; color: #ff9966; }
+    .stButton > button { background: linear-gradient(135deg, #00f5a0, #00d9f5) !important; color: #0a0a0f !important; font-family: 'Syne', sans-serif !important; font-weight: 700 !important; border: none !important; border-radius: 8px !important; padding: 0.5rem 1.5rem !important; font-size: 1rem !important; }
     hr { border-color: #222240 !important; }
-    .section-label {
-        font-family: 'Space Mono', monospace;
-        font-size: 0.7rem;
-        color: #555;
-        letter-spacing: 3px;
-        text-transform: uppercase;
-        margin-bottom: 0.5rem;
-    }
+    .section-label { font-family: 'Space Mono', monospace; font-size: 0.7rem; color: #555; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 0.5rem; }
 </style>
 """, unsafe_allow_html=True)
 
 
-# =========================
-# CNN Model (PyTorch)
-# =========================
 class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
@@ -131,9 +49,6 @@ class CNN(nn.Module):
         return self.classifier(self.features(x))
 
 
-# =========================
-# Train model (cached)
-# =========================
 @st.cache_resource
 def load_and_train_model():
     transform = transforms.Compose([
@@ -141,15 +56,12 @@ def load_and_train_model():
         transforms.Normalize((0.1307,), (0.3081,))
     ])
 
-    # Download MNIST
-    train_data = datasets.MNIST(root="./data", train=True, download=True, transform=transform)
+    train_data = datasets.MNIST(root="./data", train=True,  download=True, transform=transform)
     test_data  = datasets.MNIST(root="./data", train=False, download=True, transform=transform)
 
-    # Load custom dataset if exists
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    BASE_DIR     = os.path.dirname(os.path.abspath(__file__))
     dataset_path = os.path.join(BASE_DIR, "dataset")
     custom_loaded = False
-
     all_train = train_data
 
     if os.path.exists(dataset_path) and os.listdir(dataset_path):
@@ -159,13 +71,15 @@ def load_and_train_model():
             if not os.path.isdir(folder):
                 continue
             for file in os.listdir(folder):
+                # Only accept PNG files — skip WhatsApp JPEGs and other formats
+                if not file.lower().endswith('.png'):
+                    continue
                 try:
                     img = Image.open(os.path.join(folder, file)).convert("L").resize((28, 28))
                     arr = np.array(img, dtype=np.float32) / 255.0
                     if np.mean(arr) > 0.5:
                         arr = 1 - arr
                     arr = (arr > 0.1).astype(np.float32)
-                    # Normalize same as MNIST
                     arr = (arr - 0.1307) / 0.3081
                     custom_images.append(arr)
                     custom_labels.append(int(label))
@@ -173,16 +87,15 @@ def load_and_train_model():
                     pass
 
         if custom_images:
-            imgs_tensor   = torch.tensor(np.array(custom_images)).unsqueeze(1)
-            labels_tensor = torch.tensor(custom_labels, dtype=torch.long)
+            imgs_tensor    = torch.tensor(np.array(custom_images)).unsqueeze(1)
+            labels_tensor  = torch.tensor(custom_labels, dtype=torch.long)
             custom_dataset = TensorDataset(imgs_tensor, labels_tensor)
-            all_train = ConcatDataset([train_data, custom_dataset])
-            custom_loaded = True
+            all_train      = ConcatDataset([train_data, custom_dataset])
+            custom_loaded  = True
 
-    train_loader = DataLoader(all_train, batch_size=64, shuffle=True)
-    test_loader  = DataLoader(test_data,  batch_size=64, shuffle=False)
+    train_loader = DataLoader(all_train, batch_size=256, shuffle=True)
+    test_loader  = DataLoader(test_data,  batch_size=256, shuffle=False)
 
-    # Train
     model     = CNN()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
     criterion = nn.CrossEntropyLoss()
@@ -196,28 +109,22 @@ def load_and_train_model():
             loss.backward()
             optimizer.step()
 
-    # Evaluate
     model.eval()
     correct = total = 0
     with torch.no_grad():
         for images, labels in test_loader:
-            outputs   = model(images)
+            outputs      = model(images)
             _, predicted = torch.max(outputs, 1)
-            total    += labels.size(0)
-            correct  += (predicted == labels).sum().item()
+            total       += labels.size(0)
+            correct     += (predicted == labels).sum().item()
 
-    accuracy = correct / total
-
-    # Save test images for demo
+    accuracy    = correct / total
     test_images = test_data.data.numpy() / 255.0
     test_labels = test_data.targets.numpy()
 
     return model, accuracy, custom_loaded, test_images, test_labels
 
 
-# =========================
-# Predict function
-# =========================
 def predict_digit(model, img: Image.Image):
     img = img.convert("L").resize((28, 28))
     arr = np.array(img, dtype=np.float32) / 255.0
@@ -235,8 +142,8 @@ def predict_digit(model, img: Image.Image):
         output = model(tensor)
         probs  = torch.softmax(output, dim=1).numpy()[0]
 
-    top3      = np.argsort(probs)[::-1][:3]
-    predicted = int(np.argmax(probs))
+    top3       = np.argsort(probs)[::-1][:3]
+    predicted  = int(np.argmax(probs))
     confidence = float(probs[predicted]) * 100
 
     return predicted, confidence, [(int(i), float(probs[i]) * 100) for i in top3]
@@ -262,12 +169,9 @@ with col3:
 
 st.markdown("---")
 
-# =========================
-# Mode selection
-# =========================
 st.markdown('<p class="section-label">Choose test mode</p>', unsafe_allow_html=True)
 mode = st.radio(
-    "",
+    "Choose test mode",
     ["📁  Use dataset image (clean, should predict correctly)",
      "📷  Upload your own image (handwritten photo)"],
     label_visibility="collapsed"
@@ -292,15 +196,14 @@ with left:
             digit_folder = os.path.join(dataset_path, str(digit_choice))
 
             if os.path.exists(digit_folder):
-                files = [f for f in os.listdir(digit_folder)
-                         if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+                files = [f for f in os.listdir(digit_folder) if f.lower().endswith('.png')]
                 if files:
-                    img_choice    = st.selectbox("Which image?", files)
-                    img_path      = os.path.join(digit_folder, img_choice)
+                    img_choice     = st.selectbox("Which image?", files)
+                    img_path       = os.path.join(digit_folder, img_choice)
                     img_to_predict = Image.open(img_path)
                     st.image(img_to_predict, caption=f"Selected: {img_choice}", width=200)
                 else:
-                    st.warning("No images found in this digit folder.")
+                    st.warning("No PNG images found in this digit folder.")
     else:
         st.markdown('<p class="section-label">Upload your handwritten digit</p>', unsafe_allow_html=True)
         uploaded = st.file_uploader(
