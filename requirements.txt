@@ -1,6 +1,5 @@
-streamlit
-torch
-torchvision
+tensorflow
 numpy
 pillow
-opencv-python-headless
+matplotlib
+streamlit
