@@ -188,7 +188,7 @@ def load_and_train_model():
     criterion = nn.CrossEntropyLoss()
 
     model.train()
-    for epoch in range(5):
+    for epoch in range(1):
         for images, labels in train_loader:
             optimizer.zero_grad()
             outputs = model(images)
